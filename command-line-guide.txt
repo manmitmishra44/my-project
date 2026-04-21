@@ -1,0 +1,751 @@
+================================================================
+  COMMAND LINE GUIDE — BASIC TO INTERMEDIATE
+  For absolute beginners on Mac
+  (Works in Terminal app and VS Code terminal — same thing)
+================================================================
+
+
+----------------------------------------------------------------
+  FIRST — WHAT IS THE COMMAND LINE?
+----------------------------------------------------------------
+
+The command line is just another way to talk to your computer.
+Instead of clicking icons, you type instructions.
+
+  Finder (clicking)   =   Terminal (typing)
+  Double-click folder =   cd foldername
+  New folder          =   mkdir foldername
+  Delete file         =   rm filename
+  Copy file           =   cp file destination
+
+Why learn it?
+  → Developers use it daily — you can't avoid it
+  → Some things are impossible to do with clicks
+  → It's faster once you know it
+  → Every tutorial, guide, and job assumes you know this
+
+Your terminal prompt looks like this:
+  your-mac:~ yourname$
+
+Breaking it down:
+  your-mac   → your computer's name
+  ~          → current folder (~ means home folder)
+  yourname   → your username
+  $          → "ready for your command" signal
+
+In VS Code terminal it looks slightly different but works the same.
+Press  Control + `  to open it.
+
+
+================================================================
+  SECTION 1 — NAVIGATION
+  Moving around your computer in text
+================================================================
+
+
+pwd
+----
+  What it does: Shows which folder you are currently in
+  Stands for:   Print Working Directory
+
+  Example:
+    $ pwd
+    /Users/yourname/Desktop/my-project
+
+  When to use:  When you feel lost. "Where am I right now?"
+  Think of it:  Like asking Google Maps "where am I?"
+
+
+ls
+----
+  What it does: Lists everything inside your current folder
+  Stands for:   List
+
+  Basic usage:
+    $ ls
+    main.py   requirements.txt   .gitignore
+
+  With flags (extra options):
+    $ ls -l       shows details (size, date, permissions)
+    $ ls -a       shows hidden files too (files starting with .)
+    $ ls -la      combines both — details AND hidden files
+
+  Example of ls -la:
+    drwxr-xr-x  .venv
+    -rw-r--r--  main.py
+    -rw-r--r--  requirements.txt
+    -rw-r--r--  .gitignore
+
+  When to use:  After cd to see what's in a folder.
+                After creating a file to confirm it exists.
+  Think of it:  Like opening a folder in Finder and seeing files.
+
+
+cd
+----
+  What it does: Moves you into a different folder
+  Stands for:   Change Directory
+
+  Usage:
+    $ cd Desktop              move into Desktop folder
+    $ cd my-project           move into my-project folder
+    $ cd Desktop/my-project   move two levels at once
+    $ cd ..                   go back one folder (parent)
+    $ cd ../..                go back two folders
+    $ cd ~                    go to home folder (anywhere)
+    $ cd -                    go back to previous folder
+
+  The ~ symbol always means your home folder:
+    ~ = /Users/yourname
+
+  So these are the same:
+    $ cd ~/Desktop
+    $ cd /Users/yourname/Desktop
+
+  When to use:  To navigate into project folders before working.
+  Think of it:  Like double-clicking a folder in Finder.
+
+  BEGINNER TIP:
+  After typing  cd Des  press TAB key.
+  Terminal autocompletes to  cd Desktop  for you.
+  This works for any file or folder name. Use it constantly.
+
+
+================================================================
+  SECTION 2 — FILES AND FOLDERS
+  Creating, reading, moving, deleting
+================================================================
+
+
+mkdir
+------
+  What it does: Creates a new empty folder
+  Stands for:   Make Directory
+
+  Usage:
+    $ mkdir my-project          create one folder
+    $ mkdir projects            create folder called projects
+    $ mkdir -p a/b/c            create nested folders at once
+
+  When to use:  Starting a new project.
+  Think of it:  Right-click → New Folder in Finder.
+
+
+touch
+------
+  What it does: Creates a new empty file
+  
+  Usage:
+    $ touch main.py             create empty Python file
+    $ touch notes.txt           create empty text file
+    $ touch a.py b.py c.py      create multiple files at once
+
+  When to use:  To create a new file before writing code in it.
+  Think of it:  Right-click → New File in Finder.
+
+
+cat
+----
+  What it does: Prints the contents of a file to the terminal
+  Stands for:   Concatenate
+
+  Usage:
+    $ cat main.py               show contents of main.py
+    $ cat requirements.txt      show contents of requirements.txt
+    $ cat .gitignore            show contents of .gitignore
+
+  When to use:  Quick glance at a small file without opening editor.
+  Think of it:  Like opening a file just to read it, then closing.
+
+  NOTE: For long files, cat dumps everything at once.
+        Use  code filename  in VS Code to read comfortably.
+
+
+echo
+-----
+  What it does: Prints text, or writes text into a file
+
+  Usage:
+    $ echo "hello"              prints:  hello
+    $ echo "hello" > file.txt   creates file.txt containing "hello"
+    $ echo "world" >> file.txt  adds "world" to end of file.txt
+
+  The difference between > and >>:
+    >   overwrites the file (creates if doesn't exist)
+    >>  appends to the file (adds to end, never overwrites)
+
+  When to use:  Creating small files like .gitignore quickly.
+  Think of it:  Like typing into a file without opening an editor.
+
+
+cp
+----
+  What it does: Copies a file or folder
+  Stands for:   Copy
+
+  Usage:
+    $ cp main.py backup.py          copy file to new name
+    $ cp main.py ~/Desktop/         copy file to Desktop
+    $ cp -r .venv/ .venv-backup/    copy entire folder (-r means recursive)
+
+  The -r flag is needed for folders (r = recursive, copies everything inside)
+
+  When to use:  Making backups before editing something risky.
+  Think of it:  Command+C then Command+V in Finder.
+
+
+mv
+----
+  What it does: Moves OR renames a file/folder
+  Stands for:   Move
+
+  Usage:
+    $ mv old-name.py new-name.py    rename a file
+    $ mv main.py ~/Desktop/         move file to Desktop
+    $ mv my-project/ ~/Documents/   move entire folder
+
+  When to use:  Renaming files or moving them to a new location.
+  Think of it:  Dragging a file to a new location in Finder.
+
+  IMPORTANT: mv doesn't ask for confirmation. It just does it.
+             Double-check your command before pressing Enter.
+
+
+rm
+----
+  What it does: Deletes files and folders PERMANENTLY
+  Stands for:   Remove
+
+  Usage:
+    $ rm main.py                delete a file
+    $ rm a.py b.py              delete multiple files
+    $ rm -r my-folder/          delete an entire folder
+    $ rm -rf .venv/             force delete folder, no questions asked
+
+  Flags:
+    -r   recursive (needed to delete folders)
+    -f   force (no confirmation prompts)
+
+  WARNING: There is NO trash can. Deleted = gone forever.
+           There is no undo. Be very careful with rm -rf.
+           Always double-check with ls before deleting.
+
+  When to use:  Deleting .venv to rebuild it fresh.
+  Think of it:  Shift+Delete (permanent delete, no trash) in Finder.
+
+
+================================================================
+  SECTION 3 — READING AND SEARCHING
+  Finding things and reading file contents
+================================================================
+
+
+open
+-----
+  What it does: Opens a file or folder using the default app
+
+  Usage:
+    $ open .                    open current folder in Finder
+    $ open main.py              open file in default app
+    $ open ~/Desktop            open Desktop in Finder
+    $ open https://github.com   open URL in browser
+
+  When to use:  When you want to see the folder visually in Finder.
+  Think of it:  Double-clicking something in Finder.
+
+
+code
+-----
+  What it does: Opens files or folders in VS Code
+  (Only works after installing the 'code' command in VS Code)
+
+  Usage:
+    $ code .                    open current folder in VS Code
+    $ code main.py              open specific file in VS Code
+    $ code requirements.txt     open requirements.txt in VS Code
+    $ code a.py b.py            open multiple files as tabs
+
+  How to install it (one time only):
+    1. Open VS Code
+    2. Press Command + Shift + P
+    3. Type "Shell Command"
+    4. Click "Install 'code' command in PATH"
+
+  When to use:  Opening any file you want to read or edit properly.
+  Think of it:  The VS Code version of double-clicking a file.
+
+
+grep
+-----
+  What it does: Searches for text inside files
+  Stands for:   Global Regular Expression Print
+
+  Usage:
+    $ grep "import" main.py         find lines containing "import"
+    $ grep "def " main.py           find all function definitions
+    $ grep -r "requests" .          search in ALL files in folder
+    $ grep -i "flask" requirements.txt   case-insensitive search
+
+  Flags:
+    -r   search inside all files in folder (recursive)
+    -i   ignore uppercase/lowercase difference
+    -n   show line numbers
+
+  Example output:
+    $ grep "import" main.py
+    3: import requests
+    4: import os
+
+  When to use:  Finding which file uses a certain package or function.
+                Searching for a word across your whole project.
+  Think of it:  Command+F search but for the terminal.
+
+
+================================================================
+  SECTION 4 — SYSTEM INFORMATION
+  Understanding your environment
+================================================================
+
+
+which
+------
+  What it does: Shows the full path of a command/program
+
+  Usage:
+    $ which python3         where is Python 3?
+    $ which pip             where is pip?
+    $ which git             where is git?
+    $ which code            where is VS Code command?
+
+  Output examples:
+    GOOD (venv is active):
+      $ which python3
+      /Users/yourname/Desktop/my-project/.venv/bin/python3
+
+    BAD (venv is NOT active):
+      $ which python3
+      /usr/local/bin/python3
+
+  When to use:  After activating venv to confirm it worked.
+                Debugging "why is pip installing to wrong place?"
+  Think of it:  "Which version of this program will actually run?"
+
+
+python3 --version
+------------------
+  What it does: Shows which version of Python you have
+
+  Usage:
+    $ python3 --version
+    Python 3.12.0
+
+  When to use:  Checking your Python version before starting a project.
+
+
+history
+--------
+  What it does: Shows all commands you have typed recently
+
+  Usage:
+    $ history               shows last ~500 commands
+    $ history 20            shows last 20 commands
+
+  Pro tip:
+    Press the UP arrow key to scroll through recent commands.
+    Press UP repeatedly to go further back.
+    This saves a lot of re-typing.
+
+  When to use:  "What did I run earlier?" or finding a long command
+                you don't want to retype.
+
+
+clear
+------
+  What it does: Clears all text from terminal screen
+
+  Usage:
+    $ clear
+
+  Shortcut:  Control + L  (faster than typing clear)
+
+  When to use:  When terminal is too cluttered to read.
+                Note: it doesn't delete history, just clears the view.
+
+
+================================================================
+  SECTION 5 — ENVIRONMENT VARIABLES
+  Understanding PATH and your shell
+================================================================
+
+
+echo $PATH
+-----------
+  What it does: Shows your PATH — the list of folders your
+                terminal searches when you type a command
+
+  Usage:
+    $ echo $PATH
+    /usr/local/bin:/usr/bin:/bin
+
+  When venv is active, .venv/bin gets added to the front:
+    /Users/yourname/my-project/.venv/bin:/usr/local/bin:/usr/bin
+
+  When to use:  Debugging why a command isn't being found.
+                Confirming venv is properly activated.
+
+
+echo $VIRTUAL_ENV
+------------------
+  What it does: Shows which venv is currently active
+
+  Usage:
+    $ echo $VIRTUAL_ENV
+
+  If venv is active:
+    /Users/yourname/Desktop/my-project/.venv
+
+  If no venv is active:
+    (prints nothing)
+
+  When to use:  Double-checking which environment is active.
+
+
+================================================================
+  SECTION 6 — GIT COMMANDS
+  Version control for your code
+================================================================
+
+
+git init
+---------
+  What it does: Starts git tracking in the current folder
+  Run:          Once per project
+
+  $ git init
+  Initialized empty Git repository in .../my-project/.git/
+
+
+git status
+-----------
+  What it does: Shows what has changed since your last commit
+
+  $ git status
+
+  Output colours:
+    Red  = changed but not staged (not added yet)
+    Green = staged and ready to commit
+
+  Run this constantly. It's your most important git command.
+
+
+git add
+--------
+  What it does: Stages files (selects what goes in next commit)
+
+  $ git add .                 add everything (respects .gitignore)
+  $ git add main.py           add just one file
+  $ git add a.py b.py         add specific files
+
+
+git commit
+-----------
+  What it does: Saves a snapshot of staged files with a message
+
+  $ git commit -m "initial project setup"
+  $ git commit -m "add login feature"
+  $ git commit -m "fix requirements.txt"
+
+  Good commit message rules:
+    → Use present tense: "add" not "added"
+    → Be specific: "add login page" not "stuff"
+    → Keep it under 72 characters
+
+
+git log
+--------
+  What it does: Shows history of all your commits
+
+  $ git log                   full detailed log
+  $ git log --oneline         compact one line per commit
+
+  Example output:
+    a3f2c1d  add requirements.txt
+    b8e9f2a  create project structure
+    c1d4e5f  initial commit
+
+  When to use:  Reviewing what you've done. Finding old commits.
+
+
+git diff
+---------
+  What it does: Shows exactly what lines changed in your files
+
+  $ git diff                  show all unstaged changes
+  $ git diff main.py          show changes in specific file
+
+  Output:
+    Lines starting with + were added (shown in green)
+    Lines starting with - were removed (shown in red)
+
+  When to use:  Before committing — "what exactly am I saving?"
+
+
+git remote -v
+--------------
+  What it does: Shows which GitHub URL your project is connected to
+
+  $ git remote -v
+  origin  https://github.com/yourname/my-project.git (fetch)
+  origin  https://github.com/yourname/my-project.git (push)
+
+  When to use:  Confirming your project is connected to the right repo.
+
+
+git push
+---------
+  What it does: Uploads your commits to GitHub
+
+  $ git push                  push (after first time setup)
+  $ git push -u origin main   first time pushing a new repo
+
+
+git pull
+---------
+  What it does: Downloads latest changes from GitHub to your computer
+
+  $ git pull
+
+  When to use:  When working on multiple computers, or with teammates.
+                Always pull before you start working each day.
+
+
+git clone
+----------
+  What it does: Downloads a repo from GitHub to your computer
+
+  $ git clone https://github.com/someone/their-project
+
+  When to use:  Getting someone else's project, or setting up your
+                own project on a new computer.
+
+
+================================================================
+  SECTION 7 — PYTHON AND PIP COMMANDS
+================================================================
+
+
+python3
+--------
+  $ python3 --version                check Python version
+  $ python3 main.py                  run a Python script
+  $ python3                          open interactive Python shell
+  >>> exit()                         exit the Python shell
+
+
+pip
+----
+  $ pip install requests             install a package
+  $ pip install requests==2.28.0     install exact version
+  $ pip install --upgrade requests   update to latest version
+  $ pip uninstall requests           remove a package
+  $ pip list                         see all installed packages
+  $ pip show requests                details about one package
+  $ pip freeze                       list packages in exact format
+  $ pip freeze > requirements.txt    save packages to file
+  $ pip install -r requirements.txt  install from file
+
+
+venv
+-----
+  $ python3 -m venv .venv            create virtual environment
+  $ source .venv/bin/activate        activate it (Mac/Linux)
+  $ deactivate                       deactivate it
+  $ rm -rf .venv                     delete it completely
+
+
+================================================================
+  SECTION 8 — SHORTCUTS THAT SAVE TIME
+================================================================
+
+TAB key
+--------
+  Start typing a filename or folder and press TAB.
+  Terminal autocompletes it for you.
+
+  Example:
+    Type:   cd Des
+    Press:  TAB
+    Gets:   cd Desktop
+
+  If multiple options match, press TAB twice to see them all.
+  USE THIS CONSTANTLY. It prevents typos and saves time.
+
+
+UP arrow key
+-------------
+  Press UP to go back through your command history.
+  Press it multiple times to go further back.
+  Press ENTER to run the command again.
+
+  Use case: You just ran a long command and need to run it again.
+
+
+Control + C
+------------
+  Stops whatever is currently running in the terminal.
+  Use when: A command is taking too long or stuck in a loop.
+  Think of it: The emergency stop button.
+
+
+Control + L
+------------
+  Clears the terminal screen (same as typing clear).
+  Use when: Too much text cluttering your view.
+
+
+Control + A
+------------
+  Moves cursor to the START of the current line.
+  Useful for editing a long command you're typing.
+
+
+Control + E
+------------
+  Moves cursor to the END of the current line.
+
+
+================================================================
+  SECTION 9 — READING PATHS
+  Understanding folder structure
+================================================================
+
+/ (forward slash)
+------------------
+  Separates folders in a path.
+  /Users/yourname/Desktop/my-project
+  means: folder Users → inside it yourname → inside it Desktop
+         → inside it my-project
+
+~ (tilde)
+----------
+  Shortcut for your home folder.
+  ~ = /Users/yourname
+
+  So:
+  ~/Desktop        = /Users/yourname/Desktop
+  ~/Documents      = /Users/yourname/Documents
+  ~/Desktop/my-project/main.py = full path to your file
+
+. (single dot)
+---------------
+  Means "the current folder I am in right now"
+  $ git add .         add everything in current folder
+  $ code .            open current folder in VS Code
+
+.. (double dot)
+----------------
+  Means "the parent folder (one level up)"
+  $ cd ..             go back one folder
+  $ cd ../..          go back two folders
+  $ cd ../other-project   go back one then into other-project
+
+
+================================================================
+  SECTION 10 — COMMON BEGINNER MISTAKES
+================================================================
+
+Mistake 1: Spaces in folder/file names
+  BAD:   mkdir my project          creates TWO folders: my  and  project
+  GOOD:  mkdir my-project          creates ONE folder: my-project
+  GOOD:  mkdir my_project          also fine
+
+Mistake 2: Wrong folder
+  Always check with pwd before running important commands.
+  Many errors happen because you're in the wrong folder.
+
+Mistake 3: Forgetting to activate venv
+  Always check for (.venv) in your prompt before pip install.
+  If you don't see it → run source .venv/bin/activate first.
+
+Mistake 4: Using rm without thinking
+  rm is permanent. No trash can. No undo.
+  Run ls first to confirm what's in the folder.
+  Then run rm carefully.
+
+Mistake 5: Closing terminal without deactivating
+  You can just close it — it's fine.
+  But next time you open terminal, activate again.
+  source .venv/bin/activate
+
+Mistake 6: Typing commands with capital letters wrong
+  Terminal is case-sensitive.
+  cd Desktop    works
+  cd desktop    fails (if folder is named Desktop)
+
+
+================================================================
+  QUICK REFERENCE — ALL COMMANDS AT A GLANCE
+================================================================
+
+NAVIGATION:
+  pwd                         where am I?
+  ls                          what's in this folder?
+  ls -la                      show hidden files + details
+  cd foldername               move into folder
+  cd ..                       go back one level
+  cd ~                        go to home folder
+
+FILES AND FOLDERS:
+  mkdir foldername            create folder
+  touch filename              create empty file
+  cat filename                print file contents
+  echo "text" > file          create file with text
+  echo "text" >> file         append text to file
+  cp source destination       copy file
+  mv source destination       move or rename file
+  rm filename                 delete file (permanent!)
+  rm -rf foldername           delete folder (permanent!)
+
+READING AND SEARCHING:
+  open .                      open folder in Finder
+  code filename               open file in VS Code
+  code .                      open folder in VS Code
+  grep "word" filename        search for word in file
+  grep -r "word" .            search in all files
+
+SYSTEM INFO:
+  which python3               where is this command?
+  python3 --version           check Python version
+  history                     show recent commands
+  clear                       clear terminal screen
+  echo $PATH                  show PATH variable
+
+GIT:
+  git init                    start tracking folder
+  git status                  what changed?
+  git add .                   stage everything
+  git commit -m "message"     save snapshot
+  git log --oneline           see commit history
+  git diff                    see exact changes
+  git push                    upload to GitHub
+  git pull                    download from GitHub
+  git clone URL               download a repo
+  git remote -v               show connected GitHub URL
+
+PYTHON AND PIP:
+  python3 main.py             run Python script
+  python3 -m venv .venv       create virtual environment
+  source .venv/bin/activate   activate venv
+  deactivate                  deactivate venv
+  pip install package         install package
+  pip list                    list installed packages
+  pip freeze > req.txt        save packages to file
+  pip install -r req.txt      install from file
+
+SHORTCUTS:
+  TAB                         autocomplete filename
+  UP arrow                    previous command
+  Control + C                 stop running command
+  Control + L                 clear screen
+
+================================================================
