@@ -1,0 +1,365 @@
+================================================================
+  PYTHON PROJECT SETUP — COMPLETE GUIDE
+  From zero to pushed on GitHub
+  (Keep this file in every project you create)
+================================================================
+
+
+----------------------------------------------------------------
+  WHAT YOU ARE BUILDING
+----------------------------------------------------------------
+
+Every Python project needs this structure:
+
+  my-project/
+    .venv/              ← private Python (never touch, never push)
+    .gitignore          ← tells git what to ignore
+    requirements.txt    ← list of packages your project needs
+    main.py             ← your actual code
+
+Why each piece exists:
+  .venv/           → keeps your packages isolated from other projects
+  .gitignore       → stops .venv from being uploaded to GitHub
+  requirements.txt → lets anyone recreate your exact setup
+  main.py          → where you write your Python code
+
+
+----------------------------------------------------------------
+  PHASE 1 — TERMINAL BASICS
+----------------------------------------------------------------
+
+These 4 commands are used constantly. Learn them first.
+
+  pwd              → "where am I right now?" (shows current folder)
+  ls               → "what's inside this folder?"
+  cd foldername    → "move into this folder"
+  cd ..            → "go back one folder"
+  mkdir name       → "create a new folder"
+
+In VS Code you don't need a separate Terminal app.
+Just press:  Control + `  (backtick key, top-left under Escape)
+Or go to:    Terminal → New Terminal
+
+The VS Code terminal opens inside your project folder automatically.
+Every command below works exactly the same as Mac Terminal.
+
+
+----------------------------------------------------------------
+  PHASE 2 — CREATE YOUR PROJECT FOLDER
+----------------------------------------------------------------
+
+WHAT:  Make a clean home for your project.
+
+  cd ~/Desktop
+  mkdir my-project
+  cd my-project
+  pwd                  ← confirm you're inside my-project
+
+Then create your Python file:
+
+  touch main.py        ← creates empty file
+  OR
+  echo "" > main.py    ← also works, creates file with blank line
+
+In VS Code you can also just click the New File icon in the
+sidebar and type main.py — same result.
+
+WHY: One folder = one project. Everything related to this
+project lives here and nowhere else.
+
+
+----------------------------------------------------------------
+  PHASE 3 — CREATE VIRTUAL ENVIRONMENT
+----------------------------------------------------------------
+
+WHAT:  Build a private Python installation for this project only.
+
+  python3 -m venv .venv
+
+Breaking this down:
+  python3   → use Python 3
+  -m        → run a built-in module
+  venv      → the module that creates virtual environments
+  .venv     → name of the folder it creates (dot = hidden in Finder)
+
+This takes a few seconds. No message = success.
+
+Now ACTIVATE it:
+
+  source .venv/bin/activate
+
+You know it worked when your prompt changes to:
+  (.venv) your-mac:my-project yourname$
+
+THE (.venv) AT THE START IS YOUR SIGNAL.
+If you don't see it → you are NOT inside the environment.
+
+IMPORTANT: Every time you open a new VS Code / Terminal window
+you must run  source .venv/bin/activate  again. The activation
+does not survive closing the terminal.
+
+To confirm it's really working:
+  which python3     ← should show path containing .venv
+  which pip         ← should show path containing .venv
+
+To deactivate (when done working):
+  deactivate
+
+
+----------------------------------------------------------------
+  PHASE 4 — CREATE .gitignore  (before installing anything)
+----------------------------------------------------------------
+
+WHAT:  Tell git which files to completely ignore forever.
+
+  echo ".venv/" > .gitignore
+  echo "__pycache__/" >> .gitignore
+  echo "*.pyc" >> .gitignore
+  echo ".DS_Store" >> .gitignore
+
+Note:
+  >  means create file and write this (overwrites)
+  >> means add to the end of existing file (append)
+
+To check the file looks right:
+  code .gitignore      ← opens in VS Code
+  OR
+  cat .gitignore       ← prints in terminal
+
+It should contain exactly:
+  .venv/
+  __pycache__/
+  *.pyc
+  .DS_Store
+
+What each line means:
+  .venv/          → ignore entire virtual environment folder
+  __pycache__/    → Python auto-creates this, you don't need it
+  *.pyc           → compiled Python files, auto-generated
+  .DS_Store       → Mac hidden file, useless to everyone else
+
+WHY DO THIS BEFORE INSTALLING:
+If you add .venv/ to gitignore after git already knows about it,
+git will still track it. Do this first, every time.
+
+
+----------------------------------------------------------------
+  PHASE 5 — INSTALL PACKAGES AND CREATE requirements.txt
+----------------------------------------------------------------
+
+WHAT:  Install what your project needs, then snapshot the list.
+
+Make sure (.venv) is showing in your prompt first!
+
+Install a package:
+  pip install requests
+
+You'll see pip also install certifi, urllib3, idna,
+charset-normalizer — these come automatically because
+requests needs them. This is called dependency resolution.
+
+Check what got installed:
+  pip list
+
+Now FREEZE (save the list to a file):
+  pip freeze > requirements.txt
+
+Verify it was created:
+  code requirements.txt
+
+The file will look like:
+  certifi==2026.2.25
+  charset-normalizer==3.4.7
+  idna==3.12
+  requests==2.33.1
+  urllib3==2.6.3
+
+The == means EXACTLY this version. Not "any requests" —
+specifically 2.33.1. This is what makes it reproducible.
+
+Note: pip itself does NOT appear in requirements.txt.
+That is normal and intentional.
+
+GOLDEN RULE:
+Every time you install a new package → re-run pip freeze.
+  pip install something-new
+  pip freeze > requirements.txt
+
+
+----------------------------------------------------------------
+  PHASE 6 — GIT BASICS
+----------------------------------------------------------------
+
+WHAT:  Git tracks every change you make to your code.
+       GitHub stores it all in the cloud.
+
+Think of it like this:
+  git       = the camera taking snapshots of your code
+  commit    = one saved snapshot
+  GitHub    = the cloud album storing all your snapshots
+  push      = uploading your local snapshots to the cloud album
+
+One-time setup (run once ever, not per project):
+  git config --global user.name "Your Name"
+  git config --global user.email "you@email.com"
+
+The 5 commands you need:
+
+  git init
+    → Start tracking this folder with git.
+    → Creates a hidden .git/ folder (git's brain).
+    → Run only ONCE per project.
+
+  git status
+    → "What has changed since my last commit?"
+    → Run this constantly. It's your sanity check.
+    → Shows untracked files (red) and staged files (green).
+
+  git add .
+    → Stage all changed files (pack the box before shipping).
+    → The dot means "everything that isn't gitignored".
+    → .venv/ will NOT be included because of your .gitignore.
+
+  git commit -m "your message here"
+    → Save a snapshot with a description.
+    → Write messages describing what changed.
+    → Example: "initial project setup with venv"
+
+  git push
+    → Upload your commits to GitHub.
+
+
+----------------------------------------------------------------
+  PHASE 7 — PUSH TO GITHUB
+----------------------------------------------------------------
+
+PART A — Create empty repo on GitHub website:
+
+  1. Go to github.com and sign in
+  2. Click green "New" button
+  3. Repository name: my-project
+  4. Leave it Public
+  5. DO NOT check "Add README", "Add .gitignore", or "license"
+     (you already have your own files)
+  6. Click "Create repository"
+  7. Copy the URL shown — looks like:
+     https://github.com/YOURNAME/my-project.git
+
+PART B — Run these commands in VS Code terminal:
+
+  git init
+  git status                          ← check what git sees
+  git add .
+  git status                          ← files should be green now
+  git commit -m "initial project setup with venv and requirements"
+  git branch -M main
+  git remote add origin https://github.com/YOURNAME/my-project.git
+  git push -u origin main
+
+Replace YOURNAME with your actual GitHub username.
+
+After pushing, go to github.com/YOURNAME/my-project
+You should see:
+  ✓ main.py
+  ✓ .gitignore
+  ✓ requirements.txt
+  ✗ .venv/ is NOT there  ← this is correct, gitignore worked!
+
+
+----------------------------------------------------------------
+  DAILY WORKFLOW (after first setup)
+----------------------------------------------------------------
+
+Every day when you sit down to work:
+
+  1. Open VS Code
+  2. Open terminal (Control + `)
+  3. source .venv/bin/activate     ← ALWAYS first
+  4. Write your code
+  5. git add .
+  6. git commit -m "describe what you changed"
+  7. git push
+
+If you installed a new package that day:
+  pip install newpackage
+  pip freeze > requirements.txt
+  git add requirements.txt
+  git commit -m "add newpackage"
+  git push
+
+
+----------------------------------------------------------------
+  WHEN SOMETHING BREAKS — NUCLEAR OPTION
+----------------------------------------------------------------
+
+If your environment is completely broken, start fresh:
+
+  deactivate                          ← step out of venv first
+  rm -rf .venv                        ← delete it completely
+  python3 -m venv .venv               ← create fresh one
+  source .venv/bin/activate           ← activate it
+  pip install -r requirements.txt     ← reinstall everything
+
+Your code (main.py etc) is untouched. Only .venv is deleted.
+This is why requirements.txt is so important.
+
+
+----------------------------------------------------------------
+  HOW A TEAMMATE SETS UP YOUR PROJECT
+----------------------------------------------------------------
+
+They run these 5 commands. That's it.
+
+  git clone https://github.com/YOURNAME/my-project
+  cd my-project
+  python3 -m venv .venv
+  source .venv/bin/activate
+  pip install -r requirements.txt
+
+Same packages. Same versions. Works on any Mac.
+No "works on my machine" problems. Ever.
+
+
+----------------------------------------------------------------
+  QUICK REFERENCE — COMMANDS AT A GLANCE
+----------------------------------------------------------------
+
+VENV:
+  python3 -m venv .venv              create environment
+  source .venv/bin/activate          activate (do every session)
+  deactivate                         turn off
+  which python3                      confirm activation
+
+PIP:
+  pip install requests               install a package
+  pip install requests==2.28.0       install specific version
+  pip uninstall requests             remove a package
+  pip list                           see everything installed
+  pip freeze > requirements.txt      save installed packages
+  pip install -r requirements.txt    install from file
+
+FILES:
+  touch main.py                      create empty file
+  code filename                      open file in VS Code
+  code .                             open folder in VS Code
+  cat filename                       print file in terminal
+
+GIT:
+  git init                           start tracking folder
+  git status                         see what changed
+  git add .                          stage all changes
+  git commit -m "message"            save snapshot
+  git push                           upload to GitHub
+  git log                            see all past commits
+
+----------------------------------------------------------------
+  THE 5 GOLDEN RULES
+----------------------------------------------------------------
+
+  1. One venv per project. Never share between projects.
+  2. Always activate before pip install. Check for (.venv).
+  3. Create .gitignore before first git add. Never commit .venv.
+  4. pip freeze after every new install. Keep requirements.txt fresh.
+  5. Commit often. Small commits with clear messages.
+
+================================================================
