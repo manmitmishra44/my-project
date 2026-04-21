@@ -1,0 +1,989 @@
+================================================================
+  GIT AND GITHUB — COMPLETE BEGINNER TUTORIAL
+  From zero to confidently pushing code
+  (Keep this file in every project you create)
+================================================================
+
+
+----------------------------------------------------------------
+  FIRST — GIT vs GITHUB  (most beginners confuse these)
+----------------------------------------------------------------
+
+These are TWO different things. Understanding this upfront
+saves a lot of confusion.
+
+  GIT
+  → A tool installed on YOUR computer
+  → Tracks every change you make to your code
+  → Works completely offline, no internet needed
+  → Think of it as: a time machine for your code
+
+  GITHUB
+  → A WEBSITE  (github.com)
+  → Stores your code in the cloud
+  → Uses git to track changes
+  → Think of it as: Google Drive but for code
+
+  Real world analogy:
+  Git = the camera taking photos of your work
+  GitHub = the cloud album storing all those photos
+
+  You can use git without GitHub.
+  GitHub cannot work without git.
+
+
+----------------------------------------------------------------
+  WHY DO YOU NEED VERSION CONTROL AT ALL?
+----------------------------------------------------------------
+
+Imagine you are writing a Python project. You have main.py
+working perfectly. You decide to add a new feature.
+
+Without git:
+  → You edit main.py directly
+  → The new feature breaks everything
+  → You try to undo but can't remember what you changed
+  → You wish you had saved a copy before editing
+
+With git:
+  → Before editing, git has a saved snapshot
+  → New feature breaks everything
+  → One command restores you to the working version
+  → No panic. No lost work.
+
+Other reasons git exists:
+  → Work on multiple features at the same time (branches)
+  → See the exact line of code that caused a bug and when
+  → Collaborate with teammates without overwriting each other
+  → Show your work to employers (your GitHub = your portfolio)
+
+
+================================================================
+  SECTION 1 — INSTALLING AND SETTING UP GIT
+================================================================
+
+
+Check if git is already installed
+-----------------------------------
+  $ git --version
+  git version 2.39.0        ← any version is fine
+
+  If you see "command not found":
+  $ xcode-select --install  ← this installs git on Mac automatically
+  Follow the popup instructions. Takes a few minutes.
+
+
+One-time setup (do this once ever, not per project)
+-----------------------------------------------------
+  Tell git who you are. This gets attached to every commit.
+  Use the same email as your GitHub account.
+
+  $ git config --global user.name "Your Full Name"
+  $ git config --global user.email "you@youremail.com"
+
+  Check it saved correctly:
+  $ git config --global user.name
+  Your Full Name
+
+  $ git config --global user.email
+  you@youremail.com
+
+  The --global flag means "use this for ALL projects on this computer"
+  Without --global it would only apply to the current project.
+
+
+Create a GitHub account
+------------------------
+  1. Go to github.com
+  2. Click "Sign up"
+  3. Use the same email you just gave to git config
+  4. Choose a username — this becomes your public identity
+     Example: github.com/yourname
+     Keep it professional — employers will see this.
+
+
+================================================================
+  SECTION 2 — THE CORE CONCEPT: HOW GIT THINKS
+================================================================
+
+Git has THREE areas. Understanding this is the key to
+understanding every git command.
+
+
+  YOUR FILES          STAGING AREA         REPOSITORY
+  (working dir)       (the box)            (saved snapshots)
+
+  main.py  ──────────────────────────────────────────────>
+  
+  You edit           git add .            git commit
+  files here         packs the box        saves the box
+
+
+1. WORKING DIRECTORY
+   → Where you actually write and edit your code
+   → Git watches this area and notices every change
+   → Changes here are NOT saved yet
+
+2. STAGING AREA (also called "index")
+   → A preparation area before saving
+   → You choose WHAT gets included in the next save
+   → Think: packing a box before shipping it
+   → git add moves files here
+
+3. REPOSITORY
+   → The permanent history of saved snapshots
+   → Each snapshot is called a COMMIT
+   → Think: the shipped boxes stacked in a warehouse
+   → git commit saves staged files here
+
+WHY have a staging area at all?
+  Imagine you changed 5 files today:
+  → 3 files are a new login feature (ready to save)
+  → 2 files are a half-finished payment feature (not ready)
+
+  Staging lets you commit ONLY the 3 login files now,
+  and commit the payment files later when they're ready.
+  You can be selective about what goes into each commit.
+
+
+================================================================
+  SECTION 3 — STARTING GIT IN YOUR PROJECT
+================================================================
+
+
+git init
+---------
+  What:  Tells git to start tracking the current folder
+  When:  Once, at the very beginning of a new project
+
+  $ cd ~/Desktop/my-project
+  $ git init
+  Initialized empty Git repository in /Users/.../my-project/.git/
+
+  What it creates:
+  A hidden folder called .git/ inside your project.
+  This is git's brain — stores ALL history, ALL snapshots.
+  NEVER delete or edit the .git/ folder manually.
+
+  Verify it exists:
+  $ ls -la
+  drwxr-xr-x  .git          ← git's brain (hidden, starts with .)
+  -rw-r--r--  main.py
+  -rw-r--r--  .gitignore
+
+
+git status
+-----------
+  What:  Shows the current state of your working directory
+  When:  Constantly. Before and after every git command.
+
+  This is your MOST IMPORTANT command. Run it obsessively.
+
+  $ git status
+
+  Possible outputs you'll see:
+
+  1. Untracked files (brand new files git has never seen):
+     Untracked files:
+       main.py           ← shown in red
+       .gitignore        ← shown in red
+
+  2. Changes not staged (files git knows, but you edited):
+     Changes not staged for commit:
+       modified: main.py ← shown in red
+
+  3. Changes staged (ready to commit):
+     Changes to be committed:
+       new file: main.py ← shown in green
+
+  4. Nothing to commit:
+     nothing to commit, working tree clean
+     ← everything is saved, no changes since last commit
+
+  IMPORTANT: Your .venv/ folder should NEVER appear here.
+  If it does, your .gitignore is not set up correctly.
+
+
+================================================================
+  SECTION 4 — SAVING YOUR WORK
+================================================================
+
+
+git add
+--------
+  What:  Moves files from working directory to staging area
+  Think: Packing items into a box before shipping
+
+  Add everything (most common):
+  $ git add .
+  The dot means "everything in current folder and subfolders"
+  .gitignore rules are respected — .venv/ won't be added.
+
+  Add a specific file:
+  $ git add main.py
+
+  Add multiple specific files:
+  $ git add main.py requirements.txt
+
+  Add all Python files:
+  $ git add *.py
+
+  After running git add, run git status to confirm:
+  $ git status
+  Changes to be committed:
+    new file: main.py    ← now green, ready to commit
+    new file: .gitignore
+    new file: requirements.txt
+
+
+git commit
+-----------
+  What:  Saves a permanent snapshot of staged files
+  Think: Sealing and labelling the box, putting it in the warehouse
+
+  $ git commit -m "your message describing what you did"
+
+  The -m flag lets you write the message inline.
+  Without -m, git opens a text editor for the message (confusing
+  for beginners — always use -m).
+
+  Good commit message examples:
+    "initial project setup with venv"
+    "add user login feature"
+    "fix bug in requirements.txt"
+    "update README with setup instructions"
+    "add error handling to main.py"
+
+  Bad commit message examples:
+    "stuff"              ← tells you nothing
+    "fix"                ← fix what?
+    "asdfgh"             ← please don't
+    "changes"            ← what changes?
+
+  Commit message rules:
+    → Use present tense: "add" not "added"
+    → Be specific enough that future you understands it
+    → Keep under 72 characters
+    → Describe WHAT and WHY, not HOW
+
+  After committing, git status shows:
+  $ git status
+  nothing to commit, working tree clean
+  ← all changes are saved
+
+
+The complete save cycle
+------------------------
+  Every time you want to save your progress:
+
+  Step 1:  git status       ← see what changed
+  Step 2:  git add .        ← stage everything
+  Step 3:  git status       ← confirm what's staged (green)
+  Step 4:  git commit -m "describe what you did"
+  Step 5:  git status       ← confirm nothing left to commit
+
+  Do this rhythm until it's automatic.
+
+
+================================================================
+  SECTION 5 — VIEWING HISTORY
+================================================================
+
+
+git log
+--------
+  What:  Shows the full history of all your commits
+
+  $ git log
+
+  Output:
+  commit a3f2c1d8e9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4
+  Author: Your Name <you@email.com>
+  Date:   Mon Jan 15 14:32:00 2024
+
+      add user login feature
+
+  commit b8e9f2a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7
+  Author: Your Name <you@email.com>
+  Date:   Mon Jan 15 10:15:00 2024
+
+      initial project setup with venv
+
+  That long string of letters and numbers is the commit ID.
+  You can use the first 7 characters to refer to any commit.
+
+  Compact version (easier to read):
+  $ git log --oneline
+  a3f2c1d  add user login feature
+  b8e9f2a  initial project setup with venv
+  c1d4e5f  create project structure
+
+  Press Q to exit the log view.
+
+
+git diff
+---------
+  What:  Shows exactly what lines changed in your files
+
+  $ git diff                  show ALL unstaged changes
+  $ git diff main.py          show changes in one file
+  $ git diff --staged         show what's staged (after git add)
+
+  Reading the output:
+  Lines starting with + were ADDED    (usually shown in green)
+  Lines starting with - were REMOVED  (usually shown in red)
+
+  Example:
+  -print("hello")       ← you deleted this line
+  +print("hello world") ← you added this line
+
+  When to use:
+  Before git add — "let me see exactly what I changed"
+  Before git commit — "let me review what I'm about to save"
+
+
+================================================================
+  SECTION 6 — CONNECTING TO GITHUB
+================================================================
+
+
+Create a new repository on GitHub
+-----------------------------------
+  1. Go to github.com and sign in
+  2. Click the + icon (top right) → "New repository"
+     OR click the green "New" button on left sidebar
+  3. Repository name: my-project
+     (use same name as your local folder — keeps it clear)
+  4. Description: optional, add a short description
+  5. Public or Private:
+     Public  = anyone can see it (good for portfolio/learning)
+     Private = only you can see it (good for sensitive work)
+  6. IMPORTANT: Leave these ALL unchecked:
+     □ Add a README file
+     □ Add .gitignore
+     □ Choose a license
+     You already have your own files locally.
+     Adding these on GitHub creates conflicts.
+  7. Click "Create repository"
+
+  GitHub now shows you a page with a URL like:
+  https://github.com/yourname/my-project.git
+  Copy this URL. You'll need it in the next step.
+
+
+git remote add origin
+----------------------
+  What:  Connects your local project to GitHub
+  Think: Giving your local project the address of where to ship
+
+  $ git remote add origin https://github.com/YOURNAME/my-project.git
+
+  Breaking this down:
+    git remote      → manage connections to remote servers
+    add             → add a new connection
+    origin          → the nickname for this connection
+                      "origin" is the universal convention
+    URL             → your GitHub repo address
+
+  Verify it worked:
+  $ git remote -v
+  origin  https://github.com/yourname/my-project.git (fetch)
+  origin  https://github.com/yourname/my-project.git (push)
+
+  You only run git remote add once per project.
+
+
+git branch -M main
+-------------------
+  What:  Renames your current branch to "main"
+  Why:   GitHub's default branch is called "main"
+         Older git versions created "master" by default
+         This ensures they match.
+
+  $ git branch -M main
+
+  You only run this once per project, before first push.
+
+
+git push
+---------
+  What:  Uploads your local commits to GitHub
+  Think: Actually shipping the boxes to the warehouse
+
+  First time pushing a new repo:
+  $ git push -u origin main
+
+  Breaking this down:
+    git push        → send commits to remote
+    -u              → set this as the default remote/branch
+                      (so next time you just type git push)
+    origin          → the remote nickname (GitHub)
+    main            → which branch to push
+
+  Every time after the first:
+  $ git push        ← that's it, just two words
+
+  After pushing, go to github.com/yourname/my-project
+  You'll see all your files there.
+
+
+The complete first-push sequence
+----------------------------------
+  Do this once when starting a new project:
+
+  $ git init
+  $ git add .
+  $ git commit -m "initial project setup"
+  $ git branch -M main
+  $ git remote add origin https://github.com/YOURNAME/my-project.git
+  $ git push -u origin main
+
+  After this, your daily push is just:
+  $ git add .
+  $ git commit -m "describe what you changed"
+  $ git push
+
+
+================================================================
+  SECTION 7 — GETTING CODE FROM GITHUB
+================================================================
+
+
+git clone
+----------
+  What:  Downloads a complete repo from GitHub to your computer
+  Think: Copying someone's entire project to your machine
+
+  $ git clone https://github.com/username/project-name
+
+  This creates a folder called project-name in your current directory
+  with ALL the files AND the complete git history.
+
+  After cloning, set up the venv:
+  $ cd project-name
+  $ python3 -m venv .venv
+  $ source .venv/bin/activate
+  $ pip install -r requirements.txt
+
+  When to use:
+  → Setting up your own project on a new computer
+  → Getting a teammate's project
+  → Downloading an open source project to study
+
+
+git pull
+---------
+  What:  Downloads latest changes from GitHub to your computer
+  Think: Syncing your local copy with the latest cloud version
+
+  $ git pull
+
+  When to use:
+  → Working on multiple computers (pull before starting work)
+  → Working with teammates (pull before starting work each day)
+  → Getting updates from an open source project
+
+  GOOD HABIT:
+  Always pull before you start working.
+  Always push when you finish working.
+  This keeps everything in sync.
+
+
+================================================================
+  SECTION 8 — BRANCHES
+  (Intermediate — read when comfortable with basics)
+================================================================
+
+What is a branch?
+------------------
+  A branch is a separate, independent version of your code.
+  You can make changes in a branch without affecting your
+  main working code.
+
+  Real world analogy:
+  Imagine writing a book. The main storyline is your "main" branch.
+  You want to try an alternative ending. You create a branch,
+  write the ending there. If you like it → merge it in.
+  If you hate it → delete the branch. Main story unchanged.
+
+  Why branches matter:
+  → Work on a new feature without breaking working code
+  → Try something risky without affecting main code
+  → Multiple people working on different features at once
+
+
+git branch
+-----------
+  What:  List, create, or delete branches
+
+  $ git branch                    list all branches
+  $ git branch feature-login      create new branch
+  $ git branch -d feature-login   delete a branch (safe)
+  $ git branch -D feature-login   force delete branch
+
+
+git checkout / git switch
+--------------------------
+  What:  Switch to a different branch
+
+  Modern way (git 2.23+):
+  $ git switch feature-login       switch to existing branch
+  $ git switch -c new-feature      create AND switch in one command
+
+  Older way (still works):
+  $ git checkout feature-login
+  $ git checkout -b new-feature    create AND switch
+
+  After switching, check which branch you're on:
+  $ git branch
+  * feature-login    ← asterisk shows current branch
+    main
+
+
+git merge
+----------
+  What:  Combines another branch into your current branch
+
+  Scenario: You finished the login feature. Merge it into main.
+
+  $ git switch main               go to main branch first
+  $ git merge feature-login       bring in the feature
+  $ git branch -d feature-login   delete the branch (done with it)
+
+  When there are no conflicts, git merges automatically.
+  The commit history from the feature branch gets added to main.
+
+
+Basic branch workflow
+----------------------
+  $ git switch -c feature-login     create and switch to new branch
+  (write code, make changes)
+  $ git add .
+  $ git commit -m "add login feature"
+  $ git switch main                 go back to main
+  $ git merge feature-login         merge the feature in
+  $ git branch -d feature-login     clean up the branch
+  $ git push                        push to GitHub
+
+
+================================================================
+  SECTION 9 — UNDOING THINGS
+  (For when you make mistakes — and you will)
+================================================================
+
+
+Undo changes in a file (before git add)
+-----------------------------------------
+  You edited main.py and want to go back to the last commit:
+
+  $ git checkout -- main.py     ← old way
+  $ git restore main.py         ← modern way (git 2.23+)
+
+  WARNING: This permanently discards your changes in that file.
+  No undo for this undo. Be sure before running it.
+
+
+Unstage a file (after git add, before git commit)
+---------------------------------------------------
+  You ran git add but changed your mind about including a file:
+
+  $ git restore --staged main.py    ← removes from staging
+  File goes back to "modified but not staged" state.
+  Your actual file content is unchanged.
+
+
+Undo the last commit (keep changes in files)
+---------------------------------------------
+  You committed but immediately realize the message was wrong
+  or you included the wrong files:
+
+  $ git reset --soft HEAD~1
+
+  What this does:
+  → Undoes the commit
+  → Keeps all your files exactly as they were
+  → Keeps changes staged (ready to commit again)
+
+  HEAD~1 means "go back one commit from current position"
+
+
+Undo the last commit (remove changes completely)
+-------------------------------------------------
+  You want to completely undo the last commit AND the changes:
+
+  $ git reset --hard HEAD~1
+
+  WARNING: This deletes both the commit AND your file changes.
+  Only use if you are absolutely sure you want everything gone.
+
+
+View old versions of a file
+-----------------------------
+  $ git log --oneline               find the commit ID you want
+  $ git show a3f2c1d:main.py        show file at that commit
+
+
+================================================================
+  SECTION 10 — .gitignore IN DEPTH
+================================================================
+
+What .gitignore does
+---------------------
+  A file called .gitignore tells git which files and folders
+  to completely ignore. They never appear in git status,
+  never get staged, never get committed, never go to GitHub.
+
+
+Where it lives
+---------------
+  In the ROOT of your project folder:
+  my-project/
+    .gitignore     ← here
+    main.py
+    .venv/
+
+
+Syntax — how to write rules
+-----------------------------
+  .venv/              ignore entire folder called .venv
+  __pycache__/        ignore entire folder called __pycache__
+  *.pyc               ignore ALL files ending in .pyc
+  *.log               ignore ALL files ending in .log
+  .DS_Store           ignore specific file called .DS_Store
+  secret.txt          ignore specific file called secret.txt
+  /config.py          ignore config.py only in root folder
+  !important.log      do NOT ignore this file (exception rule)
+
+  Lines starting with # are comments:
+  # This is a comment — git ignores this line
+
+
+Standard Python .gitignore
+-----------------------------
+  This is what every Python project should have:
+
+  # Virtual environment
+  .venv/
+  venv/
+  env/
+
+  # Python compiled files
+  __pycache__/
+  *.py[cod]
+  *.pyc
+  *.pyo
+
+  # Mac files
+  .DS_Store
+
+  # VS Code settings (optional — some commit these)
+  .vscode/
+
+  # Environment variables (IMPORTANT — never commit secrets)
+  .env
+  *.env
+
+
+VERY IMPORTANT — never commit secrets
+---------------------------------------
+  Never put passwords, API keys, or tokens in your code
+  and commit them to GitHub.
+
+  If you have secret values, put them in a .env file:
+  .env file contains:
+    SECRET_KEY=abc123yoursecretkey
+    DATABASE_PASSWORD=mypassword
+
+  Add .env to your .gitignore:
+    .env
+
+  In your Python code, use the python-dotenv library to
+  read these values. They stay on your machine only,
+  never go to GitHub.
+
+  REAL RISK: People search GitHub for accidentally committed
+  API keys and use them to run up charges on your account.
+  This happens to beginners constantly.
+
+
+================================================================
+  SECTION 11 — DAILY WORKFLOW IN PRACTICE
+================================================================
+
+
+Starting a brand new project (do once)
+----------------------------------------
+  $ mkdir my-project
+  $ cd my-project
+  $ python3 -m venv .venv
+  $ source .venv/bin/activate
+  $ touch main.py
+  $ echo ".venv/" > .gitignore
+  $ echo "__pycache__/" >> .gitignore
+  $ echo "*.pyc" >> .gitignore
+  $ echo ".DS_Store" >> .gitignore
+  $ pip install requests
+  $ pip freeze > requirements.txt
+  $ git init
+  $ git add .
+  $ git commit -m "initial project setup"
+  $ git branch -M main
+  $ git remote add origin https://github.com/YOU/my-project.git
+  $ git push -u origin main
+
+
+Working on the project each day
+---------------------------------
+  Open VS Code terminal (Control + `)
+
+  $ source .venv/bin/activate      ← ALWAYS first
+  (write code, make changes)
+  $ git add .
+  $ git commit -m "what you did today"
+  $ git push
+
+
+If you installed a new package
+--------------------------------
+  $ pip install newpackage
+  $ pip freeze > requirements.txt
+  $ git add requirements.txt
+  $ git commit -m "add newpackage dependency"
+  $ git push
+
+
+Setting up your project on a NEW computer
+------------------------------------------
+  $ git clone https://github.com/YOU/my-project.git
+  $ cd my-project
+  $ python3 -m venv .venv
+  $ source .venv/bin/activate
+  $ pip install -r requirements.txt
+  Done. Identical setup to your other machine.
+
+
+================================================================
+  SECTION 12 — READING GIT OUTPUT
+  Understanding what git is telling you
+================================================================
+
+
+After git commit:
+  [main a3f2c1d] initial project setup
+   3 files changed, 45 insertions(+)
+   create mode 100644 .gitignore
+   create mode 100644 main.py
+   create mode 100644 requirements.txt
+
+  Reading this:
+  [main a3f2c1d]  → branch name and short commit ID
+  3 files changed → how many files were in this commit
+  45 insertions   → how many lines were added
+  create mode     → these were new files (not edits)
+
+
+After git push:
+  Enumerating objects: 5, done.
+  Counting objects: 100% (5/5), done.
+  Writing objects: 100% (5/5), 450 bytes | 450.00 KiB/s, done.
+  To https://github.com/yourname/my-project.git
+   * [new branch]  main -> main
+
+  The last line confirms it worked. main -> main means your
+  local main branch was pushed to GitHub's main branch.
+
+
+After git pull:
+  Already up to date.   ← nothing new on GitHub
+
+  OR:
+  Updating a3f2c1d..b8e9f2a
+  Fast-forward
+   main.py | 5 +++++
+  ← downloaded and applied new changes
+
+
+================================================================
+  SECTION 13 — COMMON ERRORS AND FIXES
+================================================================
+
+
+"fatal: not a git repository"
+--------------------------------
+  Cause:  You ran a git command outside a git project folder
+  Fix:    $ cd path/to/your/project
+          $ git status       ← confirm you're in right place
+          If needed: $ git init
+
+
+"nothing to commit, working tree clean"
+-----------------------------------------
+  This is NOT an error. It means everything is saved.
+  You only see this after committing everything.
+
+
+"Please tell me who you are"
+------------------------------
+  Cause:  git config not set up yet
+  Fix:    $ git config --global user.name "Your Name"
+          $ git config --global user.email "you@email.com"
+
+
+"rejected — failed to push some refs"
+---------------------------------------
+  Cause:  GitHub has commits your local machine doesn't have
+  Fix:    $ git pull       ← get the new commits first
+          $ git push       ← then push yours
+
+
+"src refspec main does not match any"
+---------------------------------------
+  Cause:  You haven't made any commits yet
+  Fix:    Make at least one commit before pushing:
+          $ git add .
+          $ git commit -m "initial commit"
+          $ git push -u origin main
+
+
+"error: pathspec did not match any files"
+------------------------------------------
+  Cause:  You typed a filename that doesn't exist
+  Fix:    $ ls        ← check exact filename
+          Check spelling and capitalisation
+
+
+"CONFLICT — Automatic merge failed"
+-------------------------------------
+  Cause:  Two versions of the same file conflict
+  When:   Usually when using branches or collaborating
+  Fix:    Open the conflicting file in VS Code
+          Git marks conflicts like this:
+          <<<<<<< HEAD
+          your version of the code
+          =======
+          their version of the code
+          >>>>>>> branch-name
+
+          Decide which version to keep.
+          Delete the conflict markers (<<<, ===, >>>).
+          Save the file.
+          $ git add .
+          $ git commit -m "resolve merge conflict"
+
+
+================================================================
+  SECTION 14 — GITHUB FEATURES TO KNOW
+================================================================
+
+
+README.md
+----------
+  A file called README.md in your repo shows up automatically
+  on your GitHub repo page as a description.
+
+  Create one:
+  $ touch README.md
+  (open in VS Code and write what your project does)
+
+  A good README includes:
+  → What this project does
+  → How to set it up (the venv steps)
+  → How to run it
+  → Any notes or requirements
+
+  GitHub renders Markdown formatting:
+  # Big heading
+  ## Smaller heading
+  **bold text**
+  `code text`
+
+
+Issues
+-------
+  GitHub Issues is a built-in task tracker.
+  Use it to track bugs, features, and to-dos for your project.
+  You can reference issues in commit messages:
+  "fix login bug, closes #4"
+
+
+GitHub as your portfolio
+-------------------------
+  Every public repo on your GitHub is visible to employers.
+  Things they look at:
+  → Do you commit regularly? (shows consistency)
+  → Are your commit messages clear? (shows communication)
+  → Is there a README? (shows you document your work)
+  → Do you use proper project structure? (shows you know the craft)
+
+  Start building this habit now, even on practice projects.
+
+
+================================================================
+  QUICK REFERENCE — GIT COMMANDS AT A GLANCE
+================================================================
+
+SETUP (one time ever):
+  git config --global user.name "Name"    set your name
+  git config --global user.email "email"  set your email
+
+STARTING A PROJECT (one time per project):
+  git init                                start tracking
+  git remote add origin URL               connect to GitHub
+  git branch -M main                      name branch main
+  git push -u origin main                 first push
+
+DAILY COMMANDS:
+  git status                              what changed?
+  git add .                               stage everything
+  git add filename                        stage one file
+  git commit -m "message"                 save snapshot
+  git push                                upload to GitHub
+  git pull                                download from GitHub
+
+HISTORY AND REVIEW:
+  git log                                 full history
+  git log --oneline                       compact history
+  git diff                                what changed exactly?
+  git diff --staged                       what's staged?
+
+UNDOING:
+  git restore filename                    undo file changes
+  git restore --staged filename           unstage a file
+  git reset --soft HEAD~1                 undo last commit (keep files)
+
+BRANCHES:
+  git branch                             list branches
+  git switch -c branch-name              create and switch
+  git switch main                        switch to main
+  git merge branch-name                  merge into current
+  git branch -d branch-name             delete branch
+
+GETTING CODE:
+  git clone URL                          download a repo
+
+================================================================
+  THE 5 HABITS THAT MAKE YOU GOOD AT GIT
+================================================================
+
+  1. Run git status constantly
+     Before and after every git command.
+     It tells you exactly what's happening.
+
+  2. Commit small and often
+     Don't code for 3 hours then make one giant commit.
+     Commit every time you finish one thing.
+     Each commit should do ONE thing.
+
+  3. Write real commit messages
+     "add login feature" not "stuff"
+     Future you will thank present you.
+
+  4. Always check .venv is gitignored
+     Before first push, run git status.
+     .venv should NEVER appear in the list.
+
+  5. Pull before you push
+     Especially if working on multiple computers.
+     git pull first, then git push.
+
+================================================================
