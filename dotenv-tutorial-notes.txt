@@ -1,0 +1,756 @@
+================================================================================
+
+            HIDING API KEYS SECURELY - COMPLETE BEGINNER GUIDE
+
+            Environment Variables + .env files + python-dotenv
+
+                        Day 3 Learning Notes
+
+================================================================================
+
+
+HOW TO USE THIS FILE
+--------------------
+Read it top to bottom. Don't skip sections.
+If something confuses you, re-read the section above it.
+Every concept builds on the one before it.
+
+
+
+================================================================================
+PART 1: WHY DOES ANY OF THIS EXIST?
+================================================================================
+
+Imagine you are building an app that talks to ChatGPT or any other online
+service. To use it, you need a "secret key" that looks something like:
+
+    sk-proj-abc123xyz456...
+
+This key is like a password. Anyone who has it can:
+  - Use the service pretending to be you
+  - Make YOU pay the bill
+  - Steal your data
+
+Now imagine you write code like this:
+
+    import openai
+    openai.api_key = "sk-proj-abc123xyz456..."     <-- BAD!
+
+This is called "HARDCODING" the key - meaning you typed it directly into
+your code. This is dangerous. Here is why:
+
+PROBLEM 1: You push your code to GitHub
+    Now the WHOLE INTERNET can see your secret key.
+    This has happened to real developers. They lost thousands of dollars.
+
+PROBLEM 2: You share the code with a friend
+    Your friend now has your secret key too.
+
+PROBLEM 3: You want to change the key
+    You have to find and edit every place you wrote it.
+
+
+THE SOLUTION
+------------
+Keep your secrets OUT of your code.
+Store them somewhere else.
+Load them when your app starts.
+
+That "somewhere else" is called an ENVIRONMENT VARIABLE.
+
+
+
+================================================================================
+PART 2: WHAT IS AN ENVIRONMENT VARIABLE?
+================================================================================
+
+An environment variable is just a piece of information that your computer
+remembers and can give to any program that asks for it.
+
+Think of it like this:
+
+    You walk into a library.
+    The librarian hands you a small notebook with labels on each page:
+       - NAME: John
+       - FAVORITE_COLOR: blue
+       - SECRET_CODE: 12345
+
+    Any program you run in that library can open this notebook and read it.
+    But the notebook is NOT inside any of the books.
+    It lives OUTSIDE the books, with the librarian.
+
+That is exactly what environment variables are.
+  - The LIBRARIAN = your operating system (Mac/Windows/Linux)
+  - The NOTEBOOK = the environment variables
+  - The BOOKS = your code files (.py)
+
+
+EXAMPLES YOU ALREADY HAVE
+-------------------------
+Your computer already has environment variables running right now. Try this:
+
+On Mac/Linux, open terminal and type:
+    echo $HOME
+    echo $USER
+    echo $PATH
+
+You will see your home folder, your username, and a big list of folders.
+These are all environment variables that your computer keeps for you.
+
+
+HOW PYTHON READS THEM
+---------------------
+Python has a built-in way to read these. You write:
+
+    import os
+    value = os.environ.get("HOME")
+    print(value)
+
+This will print your home folder path. The "os" library talks to the
+operating system and asks "hey, what is the value of HOME?"
+
+
+KEY IDEA
+--------
+The secret key is NOT inside your .py file.
+It lives in the operating system's memory.
+Your code just asks the OS for it when it needs it.
+
+This means:
+  - Your code file has no secret in it
+  - You can share your code safely
+  - Different computers can have different values for the same key name
+
+
+
+================================================================================
+PART 3: WHY WE NEED A .ENV FILE
+================================================================================
+
+Now you might think: "Great! Let me just set environment variables manually."
+
+You CAN do that. On Mac/Linux you would type:
+    export API_KEY=sk-proj-abc123...
+
+But this is annoying because:
+
+PROBLEM 1: It disappears when you close the terminal
+    Every time you open a new terminal, you have to type it again.
+
+PROBLEM 2: You might have 10 different secrets
+    That is 10 commands to type every time.
+
+PROBLEM 3: You have to remember all of them
+    No written record of what your project needs.
+
+PROBLEM 4: Moving to another computer means doing it all over again
+
+
+THE .ENV FILE - A BETTER WAY
+----------------------------
+A .env file is just a plain text file (like a notepad file) with a special
+name: ".env" (starting with a dot).
+
+Inside it, you write your secrets like this:
+
+    API_KEY=sk-proj-abc123xyz
+    DATABASE_URL=postgres://localhost/mydb
+    DEBUG=True
+
+That is it. No magic. No special format. Just KEY=VALUE on each line.
+
+You keep this file in your project folder, but you NEVER share it with
+anyone. Each person who works on the project creates their own .env file
+with their own secrets.
+
+
+WAIT - PYTHON DOES NOT READ .ENV FILES AUTOMATICALLY
+-----------------------------------------------------
+This is important. Python does NOT know about .env files by default.
+If you create a .env file and run Python, Python ignores it completely.
+
+We need something to READ the .env file and LOAD the values into the
+environment variables that Python can see.
+
+That "something" is called python-dotenv.
+
+
+
+================================================================================
+PART 4: WHAT IS python-dotenv?
+================================================================================
+
+python-dotenv is a small helper library that does ONE job:
+
+    It reads your .env file and copies each line into the environment
+    variables that Python can see.
+
+Here is the picture:
+
+   .env file            python-dotenv          os.environ         your code
+   ---------            -------------          ----------         ---------
+
+   API_KEY=abc    -->   reads the file   -->   API_KEY=abc   -->  reads from
+   APP_NAME=my          and loads it           APP_NAME=my        os.environ
+                        into environment
+
+Without python-dotenv, you would have to set every variable by hand before
+running your script. With python-dotenv, one line of code handles it all.
+
+
+
+================================================================================
+PART 5: THE COMPLETE STEP BY STEP BUILD
+================================================================================
+
+Now we build the app. Follow each step. Type every command yourself.
+Do not copy and paste - typing helps you remember.
+
+
+STEP 1: GO TO YOUR MAIN PROJECT FOLDER
+---------------------------------------
+Open your terminal and go to your project folder:
+
+    cd my-project
+
+Check you are in the right place:
+
+    pwd
+
+You should see something ending in "/my-project".
+
+
+STEP 2: ACTIVATE YOUR VIRTUAL ENVIRONMENT
+------------------------------------------
+Every Python project should have its own virtual environment (.venv).
+This keeps installed packages separate for each project.
+
+    source .venv/bin/activate
+
+Your terminal prompt should now show "(.venv)" on the left side.
+This means the virtual environment is active.
+
+If you see (.venv) - good. Continue.
+If you do not see (.venv) - check that you typed the command correctly.
+
+
+STEP 3: PROTECT .ENV FILES BEFORE DOING ANYTHING ELSE
+------------------------------------------------------
+This is THE MOST IMPORTANT STEP. Do this BEFORE creating any .env file.
+
+Open your .gitignore file:
+
+    cat .gitignore
+
+It should already have some entries. Add .env to it:
+
+    echo ".env" >> .gitignore
+
+IMPORTANT: Use TWO arrows (>>) not one (>)
+    >>  means "add to the end of file"
+    >   means "overwrite the whole file"
+
+If you use one arrow by mistake, you will erase everything in .gitignore.
+
+Check it worked:
+
+    cat .gitignore
+
+You should now see .env in the list.
+
+
+STEP 4: CREATE TODAY'S PROJECT FOLDER
+--------------------------------------
+Still inside my-project, create a folder for today's work:
+
+    mkdir dotenv
+    cd dotenv
+
+Now you are inside the new folder. Everything else happens here.
+
+
+STEP 5: INSTALL python-dotenv
+------------------------------
+Make sure (.venv) is still showing in your prompt. If yes, type:
+
+    pip install python-dotenv
+
+You will see some download messages. When it finishes, the library is
+installed inside your virtual environment.
+
+
+STEP 6: CREATE THE .ENV FILE
+-----------------------------
+This file will hold your secrets. Create it with two lines:
+
+    echo "API_KEY=my-super-secret-key-12345" > .env
+    echo "APP_NAME=MyFirstSecretApp" >> .env
+
+Notice:
+    First line uses ONE arrow (>) to CREATE the file
+    Second line uses TWO arrows (>>) to ADD to the file
+
+Check the file:
+
+    cat .env
+
+You should see both lines.
+
+
+STEP 7: WRITE THE APP
+----------------------
+Create a file called app.py. You can do this in VS Code:
+
+    code app.py
+
+VS Code opens an empty file. Copy this code into it:
+
+    import os
+    from dotenv import load_dotenv
+
+    # Step 1: read the .env file and load values into os.environ
+    load_dotenv()
+
+    # Step 2: get the values from the environment
+    api_key = os.environ.get("API_KEY")
+    app_name = os.environ.get("APP_NAME")
+
+    # Step 3: use them
+    print(f"Starting {app_name}...")
+
+    if api_key:
+        # only print first 4 characters so we do not leak the whole key
+        print(f"API key loaded successfully: {api_key[:4]}...")
+    else:
+        print("ERROR: API_KEY not found. Did you create a .env file?")
+
+Save with Cmd+S (Mac) or Ctrl+S (Windows).
+
+WHAT EACH LINE DOES:
+
+    import os
+        Brings in the "os" library so we can read environment variables.
+
+    from dotenv import load_dotenv
+        Brings in the load_dotenv function from the python-dotenv library.
+
+    load_dotenv()
+        Reads the .env file in the current folder and loads each line into
+        os.environ. This must happen BEFORE you try to read any values.
+
+    os.environ.get("API_KEY")
+        Asks the operating system: "what is the value of API_KEY?"
+        Returns the value if found, or None if not found.
+
+    api_key[:4]
+        Takes only the first 4 characters of the key.
+        This is for safety - we do not want to print the full secret.
+
+
+STEP 8: RUN THE APP
+--------------------
+Back in your terminal, still inside the dotenv folder:
+
+    python app.py
+
+You should see:
+
+    Starting MyFirstSecretApp...
+    API key loaded successfully: my-s...
+
+If you see this - YOU DID IT. The app is reading the secret from .env
+without the secret being inside the code.
+
+
+STEP 9: PROVE IT WORKS BY CHANGING THE VALUE
+---------------------------------------------
+This step shows WHY this is so powerful.
+
+Open .env and change the key value:
+
+    code .env
+
+Change it to:
+
+    API_KEY=totally-different-key-now
+    APP_NAME=MyFirstSecretApp
+
+Save the file. Run the app again:
+
+    python app.py
+
+Output changes:
+
+    Starting MyFirstSecretApp...
+    API key loaded successfully: tota...
+
+Notice you did NOT touch app.py. The code stayed the same. Only the
+.env file changed.
+
+This is the whole point. Secrets live in .env. Code lives in .py.
+They never mix.
+
+
+
+================================================================================
+PART 6: THE SAFETY CHECK - VERIFY .ENV IS HIDDEN
+================================================================================
+
+Before you commit anything, always verify .env is really hidden from git.
+
+Go back to the main project folder:
+
+    cd ..
+
+Check what git sees:
+
+    git status
+
+Read the output carefully. You might see your dotenv folder listed as
+untracked, but .env should NOT appear anywhere.
+
+For absolute confirmation, run:
+
+    git check-ignore dotenv/.env
+
+Two possible results:
+
+    If git prints "dotenv/.env" back
+        This means "YES, I am ignoring this file."
+        You are safe. .env will not be committed.
+
+    If git prints nothing
+        This means .gitignore is NOT protecting .env.
+        STOP. Do not commit anything.
+        Check your .gitignore file and fix it before continuing.
+
+
+
+================================================================================
+PART 7: COMMIT YOUR WORK (WITHOUT THE SECRET)
+================================================================================
+
+Git has three stages. Imagine it like packing for a trip:
+
+    1. WORKING - files on your computer (like clothes in your closet)
+    2. STAGED  - files chosen to go to git (clothes in your suitcase)
+    3. COMMITTED - files saved to git history (suitcase is zipped shut)
+
+Later, you can "push" to GitHub (take the suitcase to the airport).
+
+
+THE COMMANDS YOU USED
+---------------------
+
+    git status
+        See what has changed.
+
+    git add .gitignore
+        Stage a specific file. (Put this one item in the suitcase.)
+
+    git add .
+        Stage everything. (Put all your clothes in the suitcase.)
+        Use with caution - it stages EVERYTHING.
+
+    git commit -m "Add .env to gitignore"
+        Save the staged changes with a message.
+        (Zip up the suitcase with a label on it.)
+
+    git push
+        Upload commits to GitHub.
+        (Take the suitcase to the airport.)
+
+
+WHAT A GOOD WORKFLOW LOOKS LIKE
+--------------------------------
+
+1. First commit - save the .gitignore change:
+
+    git add .gitignore
+    git commit -m "Add .env to gitignore to protect secrets"
+
+2. Second commit - save the app:
+
+    git add dotenv/app.py
+    git commit -m "Add dotenv demo app"
+
+3. Push to GitHub:
+
+    git push
+
+Notice: you NEVER typed "git add .env". The .env file stays on your
+computer. It never enters git history. It never reaches GitHub.
+
+
+
+================================================================================
+PART 8: THE GOLDEN RULE
+================================================================================
+
+
+    +-----------------------------------------------+
+    |                                               |
+    |      NEVER COMMIT .ENV TO GIT. EVER.          |
+    |                                               |
+    +-----------------------------------------------+
+
+
+Real developers have leaked real API keys this exact way and lost real
+money. Companies have been hacked. People have been fired.
+
+The habit of "secrets stay out of git, always" is one of the most
+important habits in all of software development.
+
+If you remember NOTHING else from this tutorial, remember this one rule.
+
+
+
+================================================================================
+PART 9: WHAT GETS COMMITTED AND WHAT DOES NOT
+================================================================================
+
+    FILE                | COMMIT?      | WHY
+    --------------------|--------------|------------------------------------
+    .gitignore          | YES          | Everyone needs the same rules
+    app.py              | YES          | Your code is meant to be shared
+    requirements.txt    | YES          | Lists what packages are needed
+    .env.example        | YES (later)  | Template with empty values
+    --------------------|--------------|------------------------------------
+    .env                | NEVER        | Contains your secret keys
+    .venv/              | NEVER        | Big folder specific to your computer
+    __pycache__/        | NEVER        | Auto-generated Python cache
+    .DS_Store           | NEVER        | Mac-only junk file
+
+
+
+================================================================================
+PART 10: THE MENTAL MODEL (MEMORIZE THIS)
+================================================================================
+
+Think of it like this:
+
+    Your .py code       = PUBLIC       (goes on GitHub, safe to share)
+    Your .env file      = PRIVATE      (stays on your computer only)
+    os.environ          = THE BRIDGE   (connects the two)
+    python-dotenv       = THE LOADER   (fills os.environ from .env)
+    .gitignore          = THE GUARD    (keeps .env out of git)
+
+
+The flow when your app starts:
+
+    .env file
+       |
+       | (python-dotenv reads it)
+       v
+    os.environ
+       |
+       | (your code reads it)
+       v
+    Your Python variables
+
+
+
+================================================================================
+PART 11: COMMON BEGINNER MISTAKES (AND HOW TO FIX THEM)
+================================================================================
+
+MISTAKE 1: Using quotes around values unnecessarily
+---------------------------------------------------
+    WRONG:   API_KEY="abc123"
+    RIGHT:   API_KEY=abc123
+
+    Quotes can end up inside your value, causing weird bugs.
+
+
+MISTAKE 2: Putting spaces around the equals sign
+-------------------------------------------------
+    WRONG:   API_KEY = abc123
+    RIGHT:   API_KEY=abc123
+
+    Spaces can break the parsing.
+
+
+MISTAKE 3: Forgetting to call load_dotenv()
+--------------------------------------------
+    WRONG:
+        import os
+        api_key = os.environ.get("API_KEY")    # returns None!
+
+    RIGHT:
+        import os
+        from dotenv import load_dotenv
+        load_dotenv()                          # must come first
+        api_key = os.environ.get("API_KEY")
+
+    If you forget load_dotenv(), your .env file is never read.
+
+
+MISTAKE 4: Calling load_dotenv() in the wrong order
+----------------------------------------------------
+    WRONG:
+        api_key = os.environ.get("API_KEY")    # too early, returns None
+        load_dotenv()
+
+    RIGHT:
+        load_dotenv()                          # always first
+        api_key = os.environ.get("API_KEY")
+
+    Order matters. Load first, then read.
+
+
+MISTAKE 5: Committing .env to git
+----------------------------------
+    If you see .env in "git status" output, STOP.
+    Fix .gitignore before doing anything else.
+
+    To check safely:
+        git check-ignore .env
+
+    Should print ".env" back. If empty, protection is broken.
+
+
+MISTAKE 6: Naming your Python file "dotenv.py"
+-----------------------------------------------
+    If you name your code file dotenv.py, this line will break:
+
+        from dotenv import load_dotenv
+
+    Python will try to import from YOUR file instead of the library.
+
+    Safe filenames: app.py, main.py, script.py, weather.py
+    Unsafe filename: dotenv.py
+
+
+MISTAKE 7: Using one arrow instead of two
+------------------------------------------
+    >   means OVERWRITE (erases everything first)
+    >>  means APPEND (adds to end)
+
+    Using > on a file that has content will delete that content.
+    Always double-check: am I creating or adding?
+
+
+
+================================================================================
+PART 12: TERMINAL COMMANDS CHEAT SHEET
+================================================================================
+
+FILES AND FOLDERS
+-----------------
+    pwd                     Show where you are right now
+    ls                      List files in current folder
+    ls -la                  List files with details, including hidden ones
+    cd folder-name          Enter a folder
+    cd ..                   Go up one folder
+    mkdir folder-name       Create a new folder
+    cat file-name           Print file contents
+    code file-name          Open file in VS Code
+    code .                  Open current folder in VS Code
+
+
+CREATING AND WRITING FILES
+---------------------------
+    echo "text" > file      Create/overwrite file with text
+    echo "text" >> file     Append text to file
+    touch file-name         Create empty file
+
+
+VIRTUAL ENVIRONMENT
+-------------------
+    source .venv/bin/activate    Turn on virtual environment
+    deactivate                   Turn off virtual environment
+    pip install package-name     Install a package
+    pip freeze                   Show installed packages
+    pip freeze > requirements.txt   Save list to file
+
+
+GIT (VERSION CONTROL)
+---------------------
+    git status                      Show what changed
+    git add file-name               Stage specific file
+    git add .                       Stage everything
+    git commit -m "message"         Save staged changes
+    git push                        Upload to GitHub
+    git log --oneline               See all your commits
+    git check-ignore file-name      Check if file is being ignored
+
+
+
+================================================================================
+PART 13: THE SHORTEST POSSIBLE SUMMARY
+================================================================================
+
+THE FOUR STEPS:
+
+    1. Add .env to .gitignore
+    2. pip install python-dotenv
+    3. Create .env with KEY=value lines
+    4. In your code:
+           from dotenv import load_dotenv
+           load_dotenv()
+           key = os.environ.get("KEY")
+
+
+THE THREE RULES:
+
+    1. Never hardcode secrets in .py files
+    2. Never commit .env to git
+    3. Always .gitignore before .env-ing
+
+
+
+================================================================================
+PART 14: WHAT TO DO NEXT
+================================================================================
+
+Now that you understand the pattern, use it with a REAL API:
+
+OPTION 1: OpenWeatherMap (recommended for first real API)
+    - Free to sign up
+    - Easy API
+    - You get real data (weather for any city)
+    - Website: openweathermap.org
+
+OPTION 2: News API
+    - Free tier available
+    - Fetch news headlines
+
+OPTION 3: Any other free API that interests you
+
+THE PATTERN STAYS THE SAME:
+    1. Sign up, get a real API key
+    2. Put it in your .env file
+    3. Use load_dotenv() and os.environ.get() to read it
+    4. Make API calls with the "requests" library
+    5. Print the result
+
+You already know steps 1-3 now. Only steps 4-5 are new.
+
+
+
+================================================================================
+YOU FINISHED DAY 3
+================================================================================
+
+Take a second to appreciate what you learned today:
+
+    [x] What environment variables are and why they matter
+    [x] What .env files are and how they work
+    [x] How to install and use python-dotenv
+    [x] How to read secrets in Python code safely
+    [x] How to use .gitignore to protect files
+    [x] The git workflow: add, commit, push
+    [x] How to verify secrets are actually hidden from git
+    [x] The difference between > and >> in terminal
+    [x] Why order matters: .gitignore first, .env second
+
+Most tutorials teach only the first three things. You learned all nine.
+That is the difference between someone who watched a video and someone
+who actually UNDERSTANDS how this works.
+
+Close the laptop for now. Come back fresh for the weather API project.
+
+
+================================================================================
+END OF NOTES - DAY 3
+================================================================================
